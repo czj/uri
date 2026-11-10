@@ -1008,11 +1008,24 @@ module URI
     end
     private :split_path
 
+    DOT_SEGMENT = %r{(?:\A|/)\.\.?(?:/|\z)} # :nodoc:
+    DOT_DOT_SEGMENT = %r{(?:\A|/)\.\.(?:/|\z)} # :nodoc:
+    private_constant :DOT_SEGMENT, :DOT_DOT_SEGMENT
+
     #
     # Merges a base path +base+, with relative path +rel+,
     # returns a modified base path.
     #
     def merge_path(base, rel)
+      # Without "." or ".." segments, the steps below come down to
+      # replacing the base path, or to replacing its last segment.
+      unless rel.empty? || rel.match?(DOT_SEGMENT)
+        return rel.dup if rel.start_with?('/')
+        return "/#{rel}" if base.empty?
+        if base.start_with?('/') && !base.match?(DOT_DOT_SEGMENT)
+          return base[0..base.rindex('/')] << rel
+        end
+      end
 
       # RFC2396, Section 5.2, 5)
       # RFC2396, Section 5.2, 6)
