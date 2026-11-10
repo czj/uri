@@ -197,7 +197,7 @@ module URI
         self.set_scheme(scheme)
         self.set_host(host)
         self.set_port(port)
-        self.set_userinfo(userinfo) if userinfo
+        self.set_userinfo(userinfo)
         self.set_path(path)
         self.query = query
         self.set_opaque(opaque)
@@ -507,7 +507,7 @@ module URI
     # See also URI::Generic.userinfo=.
     #
     def set_userinfo(user, password = nil)
-      unless password
+      if user && !password
         user, password = split_userinfo(user)
       end
       @user     = user
