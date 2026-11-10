@@ -105,7 +105,9 @@ module URI
         unless name and name.ascii_only?
           return nil
         end
-        name.upcase.tr(ReservedChars, EscapedChars)
+        const_name = name.upcase
+        const_name.tr!(ReservedChars, EscapedChars)
+        const_name
       end
 
       def unescape(name)
@@ -163,9 +165,11 @@ module URI
   end
 
   # :stopdoc:
-  INITIAL_SCHEMES = scheme_list
-  private_constant :INITIAL_SCHEMES
-  Ractor.make_shareable(INITIAL_SCHEMES) if defined?(Ractor)
+  # Constant names of the schemes this library defines, by their usual lowercase
+  # spelling: looking them up skips Schemes.escape and its allocations.
+  BUNDLED_SCHEME_CONST_NAMES = %w[file ftp http https ldap ldaps mailto ws wss].map { |scheme| [scheme, scheme.upcase.to_sym] }.to_h
+  private_constant :BUNDLED_SCHEME_CONST_NAMES
+  Ractor.make_shareable(BUNDLED_SCHEME_CONST_NAMES) if defined?(Ractor)
   # :startdoc:
 
   # Returns a new object constructed from the given +scheme+, +arguments+,
@@ -185,11 +189,8 @@ module URI
   #   # => #<URI::HTTP foo://john.doe@www.example.com:123/forum/questions/?tag=networking&order=newest#top>
   #
   def self.for(scheme, *arguments, default: Generic)
-    const_name = Schemes.escape(scheme)
-
-    uri_class = INITIAL_SCHEMES[const_name]
-    uri_class ||= Schemes.find(const_name)
-    uri_class ||= default
+    const_name = BUNDLED_SCHEME_CONST_NAMES[scheme] || Schemes.escape(scheme)
+    uri_class = Schemes.find(const_name) || default
 
     return uri_class.new(scheme, *arguments)
   end
