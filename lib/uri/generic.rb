@@ -1259,8 +1259,8 @@ module URI
         return rel, rel
       end
 
-      # A path cannot be made relative to an opaque part, nor the reverse.
-      if rel.opaque.nil? != oth.opaque.nil?
+      # No relative reference leads to or from an opaque part.
+      unless rel.hierarchical? && oth.hierarchical?
         return self, self.dup
       end
 
