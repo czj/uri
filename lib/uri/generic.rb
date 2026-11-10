@@ -1259,8 +1259,8 @@ module URI
         return rel, rel
       end
 
-      # No relative reference leads to or from an opaque part.
-      unless rel.hierarchical? && oth.hierarchical?
+      # No relative reference leads from an opaque part to a path, or back.
+      if rel.hierarchical? != oth.hierarchical?
         return self, self.dup
       end
 
