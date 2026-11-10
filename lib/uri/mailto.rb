@@ -145,7 +145,7 @@ module URI
       to, header = @opaque.split('?', 2)
       # allow semicolon as a addr-spec separator
       # http://support.microsoft.com/kb/820868
-      unless /\A(?:[^@,;]+@[^@,;]+(?:\z|[,;]))*\z/ =~ to
+      unless /\A(?:[^@,;]+@[^@,;]+(?:\z|[,;]))*\z/.match?(to)
         raise InvalidComponentError,
           "unrecognised opaque part for mailtoURL: #{@opaque}"
       end
@@ -172,7 +172,7 @@ module URI
 
       v.split(/[,;]/).each do |addr|
         # check url safety as path-rootless
-        if /\A(?:%\h\h|[!$&-.0-;=@-Z_a-z~])*\z/ !~ addr
+        unless /\A(?:%\h\h|[!$&-.0-;=@-Z_a-z~])*\z/.match?(addr)
           raise InvalidComponentError,
             "an address in 'to' is invalid as URI #{addr.dump}"
         end
@@ -180,7 +180,7 @@ module URI
         # check addr-spec
         # don't s/\+/ /g
         addr.gsub!(/%\h\h/, URI::TBLDECWWWCOMP_)
-        if EMAIL_REGEXP !~ addr
+        unless EMAIL_REGEXP.match?(addr)
           raise InvalidComponentError,
             "an address in 'to' is invalid as uri-escaped addr-spec #{addr.dump}"
         end
@@ -208,7 +208,7 @@ module URI
     def check_headers(v)
       return true unless v
       return true if v.size == 0
-      if HEADER_REGEXP !~ v
+      unless HEADER_REGEXP.match?(v)
         raise InvalidComponentError,
           "bad component(expected opaque component): #{v}"
       end
