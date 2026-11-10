@@ -1022,7 +1022,7 @@ module URI
         return +"#{rel}" if rel.start_with?('/')
         return +"/#{rel}" if base.empty?
         if base.start_with?('/') && !base.match?(DOT_SEGMENT)
-          return +"#{base[0..base.rindex('/')]}#{rel}"
+          return [base[0...base.rindex('/')], rel].join('/')
         end
       end
 
