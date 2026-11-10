@@ -1259,6 +1259,11 @@ module URI
         return rel, rel
       end
 
+      # A path cannot be made relative to an opaque part, nor the reverse.
+      if rel.opaque.nil? != oth.opaque.nil?
+        return self, self.dup
+      end
+
       # you can modify `rel', but cannot `oth'.
       return oth, rel
     end
