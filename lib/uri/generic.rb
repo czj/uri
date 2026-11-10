@@ -1226,7 +1226,7 @@ module URI
           "relative URI: #{oth}"
       end
 
-      if self.scheme != oth.scheme
+      if self.scheme != oth.scheme || self.hierarchical? != oth.hierarchical?
         return self, self.dup
       end
       rel = URI::Generic.new(nil, # it is relative URI
@@ -1257,11 +1257,6 @@ module URI
         rel.set_opaque('')
         rel.query = nil if rel.query == oth.query
         return rel, rel
-      end
-
-      # No relative reference leads from an opaque part to a path, or back.
-      if rel.hierarchical? != oth.hierarchical?
-        return self, self.dup
       end
 
       # you can modify `rel', but cannot `oth'.

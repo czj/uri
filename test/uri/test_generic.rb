@@ -374,6 +374,12 @@ class URI::TestGeneric < Test::Unit::TestCase
 
     url = URI.parse('http:/b').route_to('http:a')
     assert_equal('http:a', url.to_s)
+
+    url = URI.parse('http:a').route_to('http:/./b')
+    assert_equal('http:/./b', url.to_s)
+
+    url = URI.parse('http:a').route_to('http://example.com/b')
+    assert_equal('http://example.com/b', url.to_s)
   end
 
   def test_rfc3986_examples
