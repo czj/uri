@@ -318,7 +318,7 @@ module URI
     # Checks the scheme +v+ component against the +parser+ Regexp for :SCHEME.
     #
     def check_scheme(v)
-      if v && parser.regexp[:SCHEME] !~ v
+      if v && !parser.regexp[:SCHEME].match?(v)
         raise InvalidComponentError,
           "bad component(expected scheme component): #{v}"
       end
@@ -398,7 +398,7 @@ module URI
 
       return v unless v
 
-      if parser.regexp[:USERINFO] !~ v
+      unless parser.regexp[:USERINFO].match?(v)
         raise InvalidComponentError,
           "bad component(expected userinfo component or user component): #{v}"
       end
@@ -426,7 +426,7 @@ module URI
           "password component depends user component"
       end
 
-      if parser.regexp[:USERINFO] !~ v
+      unless parser.regexp[:USERINFO].match?(v)
         raise InvalidComponentError,
           "bad password component"
       end
@@ -603,7 +603,7 @@ module URI
       if @opaque
         raise InvalidURIError,
           "cannot set host with registry or opaque"
-      elsif parser.regexp[:HOST] !~ v
+      elsif !parser.regexp[:HOST].match?(v)
         raise InvalidComponentError,
           "bad component(expected host component): #{v}"
       end
@@ -700,7 +700,7 @@ module URI
       if @opaque
         raise InvalidURIError,
           "cannot set port with registry or opaque"
-      elsif !v.kind_of?(Integer) && parser.regexp[:PORT] !~ v
+      elsif !v.kind_of?(Integer) && !parser.regexp[:PORT].match?(v)
         raise InvalidComponentError,
           "bad component(expected port component): #{v.inspect}"
       end
@@ -781,13 +781,13 @@ module URI
       # If scheme is ftp, path may be relative.
       # See RFC 1738 section 3.2.2, and RFC 2396.
       if @scheme && @scheme != "ftp"
-        if v && v != '' && parser.regexp[:ABS_PATH] !~ v
+        if v && v != '' && !parser.regexp[:ABS_PATH].match?(v)
           raise InvalidComponentError,
             "bad component(expected absolute path component): #{v}"
         end
       else
-        if v && v != '' && parser.regexp[:ABS_PATH] !~ v &&
-           parser.regexp[:REL_PATH] !~ v
+        if v && v != '' && !parser.regexp[:ABS_PATH].match?(v) &&
+           !parser.regexp[:REL_PATH].match?(v)
           raise InvalidComponentError,
             "bad component(expected relative path component): #{v}"
         end
@@ -882,7 +882,7 @@ module URI
       if @host || @port || @user || @path  # userinfo = @user + ':' + @password
         raise InvalidURIError,
           "cannot set opaque with host, port, userinfo or path"
-      elsif v && parser.regexp[:OPAQUE] !~ v
+      elsif v && !parser.regexp[:OPAQUE].match?(v)
         raise InvalidComponentError,
           "bad component(expected opaque component): #{v}"
       end
