@@ -145,7 +145,7 @@ module URI
       to, header = @opaque.split('?', 2)
       # allow semicolon as a addr-spec separator
       # http://support.microsoft.com/kb/820868
-      unless /\A(?:[^@,;]+@[^@,;]+(?:\z|[,;]))*\z/ =~ to
+      unless /\A(?:[^@,;]+@[^@,;]+(?:\z|[,;]))*\z/.match?(to)
         raise InvalidComponentError,
           "unrecognised opaque part for mailtoURL: #{@opaque}"
       end
